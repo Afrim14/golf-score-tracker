@@ -879,5 +879,120 @@ if (!document.querySelector('style#toast-style')) {
     document.head.appendChild(style);
 }
 
+// Navigation functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Get navigation elements
+    const dashboardLink = document.querySelector('.sidebar-menu a:nth-child(1)');
+    const scoreHistoryLink = document.querySelector('.sidebar-menu a:nth-child(2)');
+    const statisticsLink = document.querySelector('.sidebar-menu a:nth-child(3)');
+    const coursesLink = document.querySelector('.sidebar-menu a:nth-child(4)');
+    
+    // Get content sections
+    const dashboardStats = document.querySelector('.dashboard-stats');
+    const chartsContainer = document.querySelector('.charts-container');
+    const scorecardFilters = document.querySelector('.scorecard-filters');
+    const scorecardList = document.querySelector('.scorecard-list');
+    
+    // Show dashboard, hide others
+    function showDashboard() {
+        // Remove active class from all links
+        document.querySelectorAll('.sidebar-menu a').forEach(link => link.classList.remove('active'));
+        // Add active class to dashboard link
+        dashboardLink.classList.add('active');
+        
+        // Show dashboard elements
+        dashboardStats.style.display = 'grid';
+        chartsContainer.style.display = 'grid';
+        scorecardFilters.style.display = 'flex';
+        scorecardList.style.display = 'block';
+        
+        // Update header title
+        document.querySelector('.header-title h1').textContent = 'Golf Scorecard Dashboard';
+    }
+    
+    // Show score history, hide others
+    function showScoreHistory() {
+        // Remove active class from all links
+        document.querySelectorAll('.sidebar-menu a').forEach(link => link.classList.remove('active'));
+        // Add active class to score history link
+        scoreHistoryLink.classList.add('active');
+        
+        // Hide dashboard charts, show scorecard list
+        dashboardStats.style.display = 'none';
+        chartsContainer.style.display = 'none';
+        scorecardFilters.style.display = 'flex';
+        scorecardList.style.display = 'block';
+        
+        // Update header title
+        document.querySelector('.header-title h1').textContent = 'Score History';
+    }
+    
+    // Show statistics, hide others
+    function showStatistics() {
+        // Remove active class from all links
+        document.querySelectorAll('.sidebar-menu a').forEach(link => link.classList.remove('active'));
+        // Add active class to statistics link
+        statisticsLink.classList.add('active');
+        
+        // Show charts, hide scorecard list
+        dashboardStats.style.display = 'grid';
+        chartsContainer.style.display = 'grid';
+        scorecardFilters.style.display = 'none';
+        scorecardList.style.display = 'none';
+        
+        // Update header title
+        document.querySelector('.header-title h1').textContent = 'Performance Statistics';
+    }
+    
+    // Show courses, hide others
+    function showCourses() {
+        // Remove active class from all links
+        document.querySelectorAll('.sidebar-menu a').forEach(link => link.classList.remove('active'));
+        // Add active class to courses link
+        coursesLink.classList.add('active');
+        
+        // Show specific chart for courses
+        dashboardStats.style.display = 'none';
+        chartsContainer.style.display = 'grid';
+        // Adjust to show only course chart
+        document.querySelectorAll('.chart-card').forEach((card, index) => {
+            if (index === 1) { // Courses chart is the second chart
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        scorecardFilters.style.display = 'flex';
+        scorecardList.style.display = 'block';
+        
+        // Update header title
+        document.querySelector('.header-title h1').textContent = 'Golf Courses';
+    }
+    
+    // Add event listeners to navigation links
+    dashboardLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        showDashboard();
+    });
+    
+    scoreHistoryLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        showScoreHistory();
+    });
+    
+    statisticsLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        showStatistics();
+    });
+    
+    coursesLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        showCourses();
+    });
+    
+    // Initialize with dashboard view
+    showDashboard();
+});
+
 // Initial fetch of scorecards
 document.addEventListener('DOMContentLoaded', fetchScorecards);

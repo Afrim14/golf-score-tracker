@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golf Score Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-golf-ball"></i>
+                <h1>GolfTracker</h1>
+            </div>
+            <div class="sidebar-menu">
+                <a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="#"><i class="fas fa-history"></i> Score History</a>
+                <a href="#"><i class="fas fa-chart-line"></i> Statistics</a>
+                <a href="#"><i class="fas fa-map-marker-alt"></i> Courses</a>
+            </div>
+            <div class="theme-toggle">
+                <span>Theme</span>
+                <label class="switch">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <header>
+                <div class="header-title">
+                    <h1>Golf Scorecard Dashboard</h1>
+                    <p id="date-today"></p>
+                </div>
+                <div class="actions">
+                    <button id="new-round-btn" class="btn primary-btn"><i class="fas fa-plus"></i> New Round</button>
+                </div>
+            </header>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-rounds">0</div>
+                    <div class="stat-label">Total Rounds</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avg-score">0</div>
+                    <div class="stat-label">Avg. ± Par</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="best-score">0</div>
+                    <div class="stat-label">Best Round</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="courses-played">0</div>
+                    <div class="stat-label">Courses Played</div>
+                </div>
+            </div>
+            
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3>Score Trends</h3>
+                    <div class="chart-container">
+                        <canvas id="score-trend-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Courses Played</h3>
+                    <div class="chart-container">
+                        <canvas id="courses-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scorecard-filters">
+                <div class="filter-group">
+                    <select id="course-filter">
+                        <option value="all">All Courses</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <select id="date-filter">
+                        <option value="all">All Dates</option>
+                        <option value="last-month">Last Month</option>
+                        <option value="last-3-months">Last 3 Months</option>
+                        <option value="last-year">Last Year</option>
+                    </select>
+                </div>
+                <div class="search-group">
+                    <input type="text" id="search-input" placeholder="Search courses...">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+
+            <div class="scorecard-list">
+                <h2>Your Scorecards</h2>
+                <div id="scorecards-container" class="scorecards-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Scorecard Modal -->
+    <div id="scorecard-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Add New Round</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="scorecard-form">
+                <input type="hidden" id="scorecard-id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="course-name">Course Name</label>
+                        <input type="text" id="course-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date-played">Date Played</label>
+                        <input type="text" id="date-played" placeholder="Select a date" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="weather">Weather Conditions</label>
+                    <input type="text" id="weather" placeholder="e.g., Sunny, 75°F">
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" placeholder="Add any notes about your round..."></textarea>
+                </div>
+                
+                <div class="scorecard-table">
+                    <h3>Front Nine</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hole</th>
+                                <th>1</th>
+                                <th>2</th>
+                                <th>3</th>
+                                <th>4</th>
+                                <th>5</th>
+                                <th>6</th>
+                                <th>7</th>
+                                <th>8</th>
+                                <th>9</th>
+                                <th>Out</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="par-row">
+                                <td>Par</td>
+                                <td><input type="number" class="par-input" data-hole="1" min="3" max="5" value="4"></td>
+                                <td><input type="number" class="par-input" data-hole="2" min="3" max="5" value="4"></td>
+                                <td><input type="number" class="par-input" data-hole="3" min="3" max="5" value="4"></td>
+                                <td><input type="number" class="par-input" data-hole="4" min="3" max="5" value="3"></td>
+                                <td><input type="number" class="par-input" data-hole="5" min="3" max="5" value="4"></td>
+                                <td><input type="number" class="par-input" data-hole="6" min="3" max="5" value="4"></td>
+                                <td><input type="number" class="par-input" data-hole="7" min="3" max="5" value="5"></td>
+                                <td><input type="number" class="par-input" data-hole="8" min="3" max="5" value="4"></td>
+                                <td><input type="number" class="par-input" data-hole="9" min="3" max="5" value="4"></td>
+                                <td id="out-par">36</td>
+                            </tr>
+                            <tr class="score-row">
+                                <td>Score</td>
+                                <td><input type="number" class="score-input" data-hole="1" min="1" max="12" value="4"></td>
+                                <td><input type="number" class="score-input" data-hole="2" min="1" max="12" value="4"></td>
+                                <td><input type="number" class="score-input" data-hole="3" min="1" max="12" value="5"></td>
+                                <td><input type="number" class="score-input" data-hole="4" min="1" max="12" value="3"></td>
+                                <td><input type="number" class="score-input" data-hole="5" min="1" max="12" value="4"></td>
+                                <td><input type="number" class="score-input" data-hole="6" min="1" max="12" value="5"></td>
+                                <td><input type="number" class="score-input" data-hole="7" min="1" max="12" value="5"></td>
+                                <td><input type="number" class="score-input" data-hole="8" min="1" max="12" value="4"></td>
+                                <td><input type="number" class="score-input" data-hole="9" min="1" max="12" value="4"></td>
+                                <td id="out-score">38</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h3>Back Nine</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hole</th>
+                                <th>10</th>
+                                <th>11</th>
+                                <th>12</th>
+                                <th>13</th>
+                                <th>14</th>
+                                <th>15</th>
+                                <th>16</th>
+                                <th>17</th>
+                                <th>18</th>
+                                <th>In</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="par-row">
+                                <td>Par</td>
+                                <td><input type="number" class="par-input" data-hole="10" min="3" max="5" value="4"></td>
+                                <td><input type="number" class="par-input" data-hole="11" min="3" max="5" value="4"></td>
+                                <td><input type="number" class="par-input" data-hole="12" min="3" max="5" value="3"></td>
+                                <td><input type="number" class="par-input" data-hole="13" min="3" max="5" value="5"></td>
+                                <td><input type="number" class="par-input" data-hole="14" min="3" max="5" value="4"></td>
+                                <td><input type="number" class="par-input" data-hole="15" min="3" max="5" value="4"></td>
+                                <td><input type="number" class="par-input" data-hole="16" min="3" max="5" value="3"></td>
+                                <td><input type="number" class="par-input" data-hole="17" min="3" max="5" value="4"></td>
+                                <td><input type="number" class="par-input" data-hole="18" min="3" max="5" value="5"></td>
+                                <td id="in-par">36</td>
+                            </tr>
+                            <tr class="score-row">
+                                <td>Score</td>
+                                <td><input type="number" class="score-input" data-hole="10" min="1" max="12" value="5"></td>
+                                <td><input type="number" class="score-input" data-hole="11" min="1" max="12" value="4"></td>
+                                <td><input type="number" class="score-input" data-hole="12" min="1" max="12" value="3"></td>
+                                <td><input type="number" class="score-input" data-hole="13" min="1" max="12" value="6"></td>
+                                <td><input type="number" class="score-input" data-hole="14" min="1" max="12" value="4"></td>
+                                <td><input type="number" class="score-input" data-hole="15" min="1" max="12" value="5"></td>
+                                <td><input type="number" class="score-input" data-hole="16" min="1" max="12" value="4"></td>
+                                <td><input type="number" class="score-input" data-hole="17" min="1" max="12" value="4"></td>
+                                <td><input type="number" class="score-input" data-hole="18" min="1" max="12" value="5"></td>
+                                <td id="in-score">40</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="scorecard-totals">
+                        <div class="total-item">
+                            <span>Total Par:</span>
+                            <span id="total-par">72</span>
+                        </div>
+                        <div class="total-item">
+                            <span>Total Score:</span>
+                            <span id="total-score">78</span>
+                        </div>
+                        <div class="total-item">
+                            <span>Relative to Par:</span>
+                            <span id="relative-to-par">+6</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn secondary-btn" id="cancel-btn">Cancel</button>
+                    <button type="submit" class="btn primary-btn" id="save-btn">Save Scorecard</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <i class="fas fa-check-circle"></i>
+            <div class="toast-message">Scorecard saved successfully!</div>
+        </div>
+        <div class="toast-progress"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
