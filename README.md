@@ -115,8 +115,6 @@ golf-score-tracker/
 └── README.md              # Project documentation
 ```
 
-## Screenshots
-[Include screenshots of your application here]
 
 ## Future Enhancements
 - User authentication system
